@@ -97,6 +97,7 @@ class Antrian extends CI_Model
 
     public function get_kodebooking_op($nopeserta)
     {
+        $this->db->join('tbl_poliklinik', 'tbl_poliklinik.BPJS_kode_poli = tbl_operasi.kodepoli');
         $this->db->where('nopeserta', $nopeserta);
         $this->db->where('terlaksana', 0);
         $this->db->from('tbl_operasi');

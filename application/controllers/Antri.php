@@ -286,7 +286,7 @@ class Antri extends REST_Controller
                         'tanggaloperasi' => $operasi[$i]->tanggaloperasi,
                         'jenistindakan' => $operasi[$i]->jenistindakan,
                         'kodepoli' => $operasi[$i]->kodepoli,
-                        'namapoli' => $operasi[$i]->namapoli,
+                        'namapoli' => $operasi[$i]->nama_poliklinik,
                         'terlaksana' => $operasi[$i]->terlaksana
                     );
                 }
