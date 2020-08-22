@@ -3,6 +3,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 require APPPATH . 'third_party/REST_Controller.php';
 require APPPATH . 'third_party/Format.php';
 
+date_default_timezone_set("Asia/Makassar");
+
 use Restserver\Libraries\REST_Controller;
 
 class Antri extends REST_Controller
