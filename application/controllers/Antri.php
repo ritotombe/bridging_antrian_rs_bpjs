@@ -152,7 +152,7 @@ class Antri extends REST_Controller
 
                 $estimasi = $this->antrian->get_estimasi($poli[0]->id_poliklinik, $tanggalperiksa);
 
-                $kodebooking = $this->antrian->input($angkaantrian, $nomorkartu, $nik, $notelp, $tanggalperiksa, $poli[0]->id_poliklinik, $nomorreferensi, $jenisreferensi, $jenisrequest, $polieksekutif, $jadwal[0]->id_jadwal);
+                $kodebooking = $this->antrian->input($nomorantrean, $nomorkartu, $nik, $notelp, $tanggalperiksa, $poli[0]->id_poliklinik, $nomorreferensi, $jenisreferensi, $jenisrequest, $polieksekutif, $jadwal[0]->id_jadwal);
 
                 $status = parent::HTTP_OK;
                 $response = array(
