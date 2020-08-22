@@ -8,7 +8,7 @@ class Antrian extends CI_Model
         $password = md5($password);
         $this->db->where('username', $username);
         $this->db->where('password', $password);
-        $this->db->from('user');
+        $this->db->from('tbl_user');
         $query = $this->db->get();
         return $query->result();
     }
