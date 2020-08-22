@@ -4,8 +4,8 @@ class Antrian extends CI_Model
     public function auth($username, $password)
     {
         /* encode dulu username nya, karena di db di encrypt */
-        $username = base64_encode($username);
-        $password = base64_encode($password);
+        $username = $username;
+        $password = md5($password);
         $this->db->where('username', $username);
         $this->db->where('password', $password);
         $this->db->from('user');
