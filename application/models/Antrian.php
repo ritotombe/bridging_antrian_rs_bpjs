@@ -25,8 +25,8 @@ class Antrian extends CI_Model
 
     public function get_poli($kodepoli)
     {
-        $this->db->where('kode_poli', $kodepoli);
-        $this->db->from('poli');
+        $this->db->where('BPJS_kode_poli', $kodepoli);
+        $this->db->from('tbl_poliklinik');
         $query = $this->db->get();
         return $query->result();
     }
@@ -71,15 +71,15 @@ class Antrian extends CI_Model
         return $query->result();
     }
 
-    public function get_dilayani($kodepoli, $tanggalperiksa, $layan = '0')
+    public function get_dilayani($kodepoli, $tanggalperiksa, $layan = '2')
     {
         $this->db->select('count(*) as jml');
-        $this->db->where('poli', $kodepoli);
+        $this->db->where('id_poli', $kodepoli);
         $this->db->where('tgl_periksa', $tanggalperiksa);
         $this->db->where('poli_eksekutif', '0');
-        $this->db->where('sudah_dilayani', $layan);
-        $this->db->group_by('sudah_dilayani');
-        $this->db->from('antrian');
+        $this->db->where('status_antrian', $layan);
+        $this->db->group_by('status_antrian');
+        $this->db->from('tbl_antrian');
         $query = $this->db->get();
         return $query->result();
     }
