@@ -6,7 +6,7 @@ class Antrian extends CI_Model
         /* encode dulu username nya, karena di db di encrypt */
         $username = $username;
         $password = md5($password);
-        $this->db->where('username', $username);
+        $this->db->where('email', $username);
         $this->db->where('password', $password);
         $this->db->from('tbl_user');
         $query = $this->db->get();
