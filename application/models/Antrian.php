@@ -99,7 +99,7 @@ class Antrian extends CI_Model
     {
         $this->db->where('nopeserta', $nopeserta);
         $this->db->where('terlaksana', 0);
-        $this->db->from('jadwal_operasi');
+        $this->db->from('tbl_operasi');
         $query = $this->db->get();
         return $query->result();
     }
@@ -108,7 +108,7 @@ class Antrian extends CI_Model
     {
         $this->db->where('tanggaloperasi >= ', $tanggal_awal);
         $this->db->where('tanggaloperasi <= ', $tanggal_akhir);
-        $this->db->from('jadwal_operasi');
+        $this->db->from('tbl_operasi');
         $query = $this->db->get();
         return $query->result();
     }
