@@ -3,6 +3,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 require APPPATH . 'third_party/REST_Controller.php';
 require APPPATH . 'third_party/Format.php';
 
+date_default_timezone_set("Asia/Makassar");
+
 use Restserver\Libraries\REST_Controller;
 
 class Antri extends REST_Controller
@@ -42,7 +44,7 @@ class Antri extends REST_Controller
 
     private function tomiliseconds($tanggal)
     {
-        date_default_timezone_set('Asia/Jakarta');
+        date_default_timezone_set('Asia/Makassar');
         return strtotime($tanggal) * 1000;
     }
 
@@ -115,13 +117,6 @@ class Antri extends REST_Controller
             } else {
                 /* kalau token valid lanjut disini */
 
-                /* cek apakah peserta sudah terdaftar sebelumnya */
-                $noantrian = $this->antrian->cek_terdaftar($nomorkartu, $kodepoli, $tanggalperiksa);
-                $ceknoantrian = $this->check($noantrian);
-                if ($ceknoantrian->status === true) {
-                    $this->gagal('Anda sudah terdaftar antrian.');
-                    exit();
-                }
                 $poli = $this->antrian->get_poli($kodepoli);
                 $cekpoli = $this->check($poli);
                 if ($cekpoli->status === false) {
@@ -129,18 +124,35 @@ class Antri extends REST_Controller
                     exit();
                 }
 
-                $terakhir = $this->antrian->get_antrian_terakhir($kodepoli, $tanggalperiksa);
+                $jadwal = $this->antrian->get_jadwal($poli[0]->id_poliklinik, date("D",strtotime($tanggalperiksa)));
+                $cekjadwal = $this->check($jadwal);
+                if ($cekjadwal->status === false) {
+                    $this->gagal('Jadwal poli tidak tersedia.');
+                    exit();
+                }
+
+                /* cek apakah peserta sudah terdaftar sebelumnya */
+                $noantrian = $this->antrian->cek_terdaftar($nomorkartu, $nik, $poli[0]->id_poliklinik, $tanggalperiksa);
+                $ceknoantrian = $this->check($noantrian);
+                if ($ceknoantrian->status === true) {
+                    $this->gagal('Anda sudah terdaftar antrian.');
+                    exit();
+                }
+                
+
+                $terakhir = $this->antrian->get_antrian_terakhir($poli[0]->id_poliklinik, $tanggalperiksa);
                 $cek_antrianterakhir = $this->check($terakhir);
                 if ($cek_antrianterakhir->status === false) {
                     $angkaantrian = 1;
                 } else {
-                    $angkaantrian = intval($terakhir[0]->no_antrian + 1);
+                    $angkaantrian = explode("-", $terakhir[0]->no_antrian);
+                    $angkaantrian = intval($angkaantrian[1] + 1);
                 }
-                $nomorantrean = $poli[0]->kode_antri . $angkaantrian;
+                $nomorantrean = $poli[0]->BPJS_kode_poli."-". $angkaantrian;
 
-                $estimasi = $this->antrian->get_estimasi($kodepoli, $tanggalperiksa);
+                $estimasi = $this->antrian->get_estimasi($poli[0]->id_poliklinik, $tanggalperiksa);
 
-                $kodebooking = $this->antrian->input($angkaantrian, $nomorkartu, $nik, $notelp, $tanggalperiksa, $kodepoli, $nomorreferensi, $jenisreferensi, $jenisrequest, $polieksekutif);
+                $kodebooking = $this->antrian->input($nomorantrean, $nomorkartu, $nik, $notelp, $tanggalperiksa, $poli[0]->id_poliklinik, $nomorreferensi, $jenisreferensi, $jenisrequest, $polieksekutif, $jadwal[0]->id_jadwal);
 
                 $status = parent::HTTP_OK;
                 $response = array(
@@ -149,7 +161,7 @@ class Antri extends REST_Controller
                         'kodebooking' => $kodebooking,
                         'jenisantrean' => $jenisrequest,
                         'estimasidilayani' => $estimasi,
-                        'namapoli' => $poli[0]->nama_poli,
+                        'namapoli' => $poli[0]->nama_poliklinik,
                         'namadokter' => ''
                     ),
                     'metadata' => array(
@@ -197,14 +209,16 @@ class Antri extends REST_Controller
                     exit();
                 }
 
-                $belum_dilayani = $this->antrian->get_dilayani($kodepoli, $tanggalperiksa);
+                //todo get poi id
+
+                $belum_dilayani = $this->antrian->get_dilayani($poli[0]->id_poliklinik, $tanggalperiksa);
                 $cek_belum_dilayani = $this->check($belum_dilayani);
                 if ($cek_belum_dilayani->status === false) {
                     $belum_dilayani = '0';
                 } else {
                     $belum_dilayani = $belum_dilayani[0]->jml;
                 }
-                $sudah_dilayani = $this->antrian->get_dilayani($kodepoli, $tanggalperiksa, '1');
+                $sudah_dilayani = $this->antrian->get_dilayani($poli[0]->id_poliklinik, $tanggalperiksa, '3');
                 $cek_sudah_dilayani = $this->check($sudah_dilayani);
                 if ($cek_sudah_dilayani->status === false) {
                     $sudah_dilayani = '0';
@@ -212,12 +226,12 @@ class Antri extends REST_Controller
                     $sudah_dilayani = $sudah_dilayani[0]->jml;
                 }
 
-                $lastupdate = $this->antrian->get_estimasi($kodepoli, date('Y-m-d'));
+                $lastupdate = $this->antrian->get_estimasi($poli[0]->id_poliklinik, date('Y-m-d'));
 
                 $status = parent::HTTP_OK;
                 $response = array(
                     'response' => array(
-                        'namapoli' => $poli[0]->nama_poli,
+                        'namapoli' => $poli[0]->nama_poliklinik,
                         'totalantrean' => $belum_dilayani,
                         'jumlahterlayani' => $sudah_dilayani,
                         'lastupdate' => $lastupdate,
@@ -272,7 +286,7 @@ class Antri extends REST_Controller
                         'tanggaloperasi' => $operasi[$i]->tanggaloperasi,
                         'jenistindakan' => $operasi[$i]->jenistindakan,
                         'kodepoli' => $operasi[$i]->kodepoli,
-                        'namapoli' => $operasi[$i]->namapoli,
+                        'namapoli' => $operasi[$i]->nama_poliklinik,
                         'terlaksana' => $operasi[$i]->terlaksana
                     );
                 }
@@ -332,7 +346,7 @@ class Antri extends REST_Controller
                         'tanggaloperasi' => $operasi[$i]->tanggaloperasi,
                         'jenistindakan' => $operasi[$i]->jenistindakan,
                         'kodepoli' => $operasi[$i]->kodepoli,
-                        'namapoli' => $operasi[$i]->namapoli,
+                        'namapoli' => $operasi[$i]->nama_poliklinik,
                         'terlaksana' => $operasi[$i]->terlaksana,
                         'nopeserta' => $operasi[$i]->nopeserta,
                         'lastupdate' => $this->tomiliseconds($operasi[$i]->lastupdate)
