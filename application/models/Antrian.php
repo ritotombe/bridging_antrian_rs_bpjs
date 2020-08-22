@@ -36,7 +36,7 @@ class Antrian extends CI_Model
     {
         $this->db->where('id_poliklinik', $kodepoli);
         $this->db->where('hari', $hari);
-        $this->db->from('tbl_poliklinik');
+        $this->db->from('tbl_jadwal_praktek_dokter');
         $query = $this->db->get();
         return $query->result(); 
     }
