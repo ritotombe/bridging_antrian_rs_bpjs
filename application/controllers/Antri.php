@@ -148,7 +148,7 @@ class Antri extends REST_Controller
                     $angkaantrian = explode("-", $terakhir[0]->no_antrian);
                     $angkaantrian = intval($angkaantrian[1] + 1);
                 }
-                $nomorantrean = $poli[0]->kode_antri."-". $angkaantrian;
+                $nomorantrean = $poli[0]->BPJS_kode_poli."-". $angkaantrian;
 
                 $estimasi = $this->antrian->get_estimasi($poli[0]->id_poliklinik, $tanggalperiksa);
 
@@ -161,7 +161,7 @@ class Antri extends REST_Controller
                         'kodebooking' => $kodebooking,
                         'jenisantrean' => $jenisrequest,
                         'estimasidilayani' => $estimasi,
-                        'namapoli' => $poli[0]->nama_poli,
+                        'namapoli' => $poli[0]->nama_poliklinik,
                         'namadokter' => ''
                     ),
                     'metadata' => array(
