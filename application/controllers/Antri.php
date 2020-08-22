@@ -199,14 +199,14 @@ class Antri extends REST_Controller
 
                 //todo get poi id
 
-                $belum_dilayani = $this->antrian->get_dilayani($poli[0]->id_poli, $tanggalperiksa);
+                $belum_dilayani = $this->antrian->get_dilayani($poli[0]->id_poliklinik, $tanggalperiksa);
                 $cek_belum_dilayani = $this->check($belum_dilayani);
                 if ($cek_belum_dilayani->status === false) {
                     $belum_dilayani = '0';
                 } else {
                     $belum_dilayani = $belum_dilayani[0]->jml;
                 }
-                $sudah_dilayani = $this->antrian->get_dilayani($poli[0]->id_poli, $tanggalperiksa, '3');
+                $sudah_dilayani = $this->antrian->get_dilayani($poli[0]->id_poliklinik, $tanggalperiksa, '3');
                 $cek_sudah_dilayani = $this->check($sudah_dilayani);
                 if ($cek_sudah_dilayani->status === false) {
                     $sudah_dilayani = '0';
@@ -214,7 +214,7 @@ class Antri extends REST_Controller
                     $sudah_dilayani = $sudah_dilayani[0]->jml;
                 }
 
-                $lastupdate = $this->antrian->get_estimasi($poli[0]->id_poli, date('Y-m-d'));
+                $lastupdate = $this->antrian->get_estimasi($poli[0]->id_poliklinik, date('Y-m-d'));
 
                 $status = parent::HTTP_OK;
                 $response = array(
