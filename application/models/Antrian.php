@@ -107,6 +107,7 @@ class Antrian extends CI_Model
 
     public function get_list_op($tanggal_awal, $tanggal_akhir)
     {
+        $this->db->join('tbl_poliklinik', 'tbl_poliklinik.BPJS_kode_poli = tbl_operasi.kodepoli');
         $this->db->where('tanggaloperasi >= ', $tanggal_awal);
         $this->db->where('tanggaloperasi <= ', $tanggal_akhir);
         $this->db->from('tbl_operasi');
