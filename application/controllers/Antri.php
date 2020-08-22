@@ -44,7 +44,7 @@ class Antri extends REST_Controller
 
     private function tomiliseconds($tanggal)
     {
-        date_default_timezone_set('Asia/Jakarta');
+        date_default_timezone_set('Asia/Makassar');
         return strtotime($tanggal) * 1000;
     }
 
@@ -117,19 +117,21 @@ class Antri extends REST_Controller
             } else {
                 /* kalau token valid lanjut disini */
 
-                /* cek apakah peserta sudah terdaftar sebelumnya */
-                $noantrian = $this->antrian->cek_terdaftar($nomorkartu, $kodepoli, $tanggalperiksa);
-                $ceknoantrian = $this->check($noantrian);
-                if ($ceknoantrian->status === true) {
-                    $this->gagal('Anda sudah terdaftar antrian.');
-                    exit();
-                }
                 $poli = $this->antrian->get_poli($kodepoli);
                 $cekpoli = $this->check($poli);
                 if ($cekpoli->status === false) {
                     $this->gagal('Poli tidak tersedia.');
                     exit();
                 }
+
+                /* cek apakah peserta sudah terdaftar sebelumnya */
+                $noantrian = $this->antrian->cek_terdaftar($nomorkartu, $nik, $poli[0]->id_poliklinik, $tanggalperiksa);
+                $ceknoantrian = $this->check($noantrian);
+                if ($ceknoantrian->status === true) {
+                    $this->gagal('Anda sudah terdaftar antrian.');
+                    exit();
+                }
+                
 
                 $terakhir = $this->antrian->get_antrian_terakhir($kodepoli, $tanggalperiksa);
                 $cek_antrianterakhir = $this->check($terakhir);
