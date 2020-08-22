@@ -56,7 +56,7 @@ class Antrian extends CI_Model
             'jns_req' => $jenisrequest,
             'poli_eksekutif' => $polieksekutif,
         );
-        $this->db->insert('antrian', $data);
+        $this->db->insert('tbl_antrian', $data);
         $insert_id = $this->db->insert_id();
         return  $insert_id;
     }
