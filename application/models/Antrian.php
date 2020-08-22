@@ -32,15 +32,25 @@ class Antrian extends CI_Model
         return $query->result();
     }
 
-    public function input($no_antrian, $nomorkartu, $nik, $notelp, $tanggalperiksa, $kodepoli, $nomorreferensi, $jenisreferensi, $jenisrequest, $polieksekutif)
+    public function get_jadwal($kodepoli, $hari)
+    {
+        $this->db->where('id_poliklinik', $kodepoli);
+        $this->db->where('hari', $hari);
+        $this->db->from('tbl_poliklinik');
+        $query = $this->db->get();
+        return $query->result(); 
+    }
+
+    public function input($no_antrian, $nomorkartu, $nik, $notelp, $tanggalperiksa, $kodepoli, $nomorreferensi, $jenisreferensi, $jenisrequest, $polieksekutif, $id_jadwal)
     {
         $data = array(
             'no_antrian' => $no_antrian,
             'no_peserta' => $nomorkartu,
             'nik' => $nik,
-            'notelp' => $notelp,
+            // 'notelp' => $notelp,
+            'id_jadwal'=> $id_jadwal,
             'tgl_periksa' => $tanggalperiksa,
-            'poli' => $kodepoli,
+            'id_poli' => $kodepoli,
             'no_referensi' => $nomorreferensi,
             'jns_referensi' => $jenisreferensi,
             'jns_req' => $jenisrequest,
@@ -54,7 +64,7 @@ class Antrian extends CI_Model
     public function get_estimasi($kodepoli, $tanggalperiksa)
     {
         /* perhitungan estimasi disesuaikan sendiri dengan sistem antrian RS */
-        date_default_timezone_set('Asia/Jakarta');
+        date_default_timezone_set('Asia/Makassar');
         $stamp = strtotime($tanggalperiksa);
         $time_in_ms = $stamp * 1000;
         return $time_in_ms;
@@ -63,11 +73,11 @@ class Antrian extends CI_Model
     public function get_antrian_terakhir($kodepoli, $tanggalperiksa)
     {
         $this->db->select('no_antrian');
-        $this->db->where('poli', $kodepoli);
+        $this->db->where('id_poli', $kodepoli);
         $this->db->where('tgl_periksa', $tanggalperiksa);
         $this->db->order_by('no_antrian', 'DESC');
         $this->db->limit(1);
-        $this->db->from('antrian');
+        $this->db->from('tbl_antrian');
         $query = $this->db->get();
         return $query->result();
     }

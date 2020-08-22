@@ -124,6 +124,13 @@ class Antri extends REST_Controller
                     exit();
                 }
 
+                $jadwal = $this->antrian->get_jadwal($poli[0]->id_poliklinik, date("D",strtotime($tanggalperiksa)));
+                $cekjadwal = $this->check($jadwal);
+                if ($cekjadwal->status === false) {
+                    $this->gagal('Jadwal poli tidak tersedia.');
+                    exit();
+                }
+
                 /* cek apakah peserta sudah terdaftar sebelumnya */
                 $noantrian = $this->antrian->cek_terdaftar($nomorkartu, $nik, $poli[0]->id_poliklinik, $tanggalperiksa);
                 $ceknoantrian = $this->check($noantrian);
@@ -133,18 +140,19 @@ class Antri extends REST_Controller
                 }
                 
 
-                $terakhir = $this->antrian->get_antrian_terakhir($kodepoli, $tanggalperiksa);
+                $terakhir = $this->antrian->get_antrian_terakhir($poli[0]->id_poliklinik, $tanggalperiksa);
                 $cek_antrianterakhir = $this->check($terakhir);
                 if ($cek_antrianterakhir->status === false) {
                     $angkaantrian = 1;
                 } else {
-                    $angkaantrian = intval($terakhir[0]->no_antrian + 1);
+                    $angkaantrian = explode("-", $terakhir[0]->no_antrian);
+                    $angkaantrian = intval($angkaantrian[1] + 1);
                 }
-                $nomorantrean = $poli[0]->kode_antri . $angkaantrian;
+                $nomorantrean = $poli[0]->kode_antri."-". $angkaantrian;
 
-                $estimasi = $this->antrian->get_estimasi($kodepoli, $tanggalperiksa);
+                $estimasi = $this->antrian->get_estimasi($poli[0]->id_poliklinik, $tanggalperiksa);
 
-                $kodebooking = $this->antrian->input($angkaantrian, $nomorkartu, $nik, $notelp, $tanggalperiksa, $kodepoli, $nomorreferensi, $jenisreferensi, $jenisrequest, $polieksekutif);
+                $kodebooking = $this->antrian->input($angkaantrian, $nomorkartu, $nik, $notelp, $tanggalperiksa, $poli[0]->id_poliklinik, $nomorreferensi, $jenisreferensi, $jenisrequest, $polieksekutif, $jadwal[0]->id_jadwal);
 
                 $status = parent::HTTP_OK;
                 $response = array(
