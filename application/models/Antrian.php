@@ -13,12 +13,15 @@ class Antrian extends CI_Model
         return $query->result();
     }
 
-    public function cek_terdaftar($nomorkartu, $nik, $kodepoli, $tgl_periksa)
+    public function cek_terdaftar($nomorkartu, $nik, $kodepoli, $tgl_periksa, $noreferensi)
     {
         $this->db->where('nik', $nomorkartu);
         $this->db->or_where('nik', $nik);
         $this->db->where('id_poli', $kodepoli);
         $this->db->where('tgl_periksa', $tgl_periksa);
+        if ($noreferensi!="" || $noreferensi){
+            $this->db->where('no_referensi', $noreferensi);
+        }
         $this->db->from('tbl_antrian');
         $query = $this->db->get();
         return $query->result();
