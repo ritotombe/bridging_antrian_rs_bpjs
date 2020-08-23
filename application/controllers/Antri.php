@@ -163,7 +163,7 @@ class Antri extends REST_Controller
 
                 /* cek apakah peserta sudah terdaftar sebelumnya */
 
-                $noantrian = $this->antrian->cek_terdaftar($nomorkartu, $nik, $poli[0]->id_poliklinik, $nomorreferensi);
+                $noantrian = $this->antrian->cek_terdaftar_ref($nomorkartu, $nik, $poli[0]->id_poliklinik, $nomorreferensi);
                 $ceknoantrian = $this->check($noantrian);
                 if ($ceknoantrian->status === true) {
                     $this->gagal('Nomor referensi anda sudah terdaftar antrian.');
