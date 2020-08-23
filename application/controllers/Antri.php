@@ -117,6 +117,36 @@ class Antri extends REST_Controller
             } else {
                 /* kalau token valid lanjut disini */
 
+                if(strlen($nomorkartu)!=13){
+                    $this->gagal('Nomor Kartu tidak boleh kurang/lebih dari 13 digit');
+                    exit();
+                }
+
+                if (!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$tanggalperiksa)) {
+                    $this->gagal('Format tanggal salah atau kosong. Gunakan format YYYY-MM-DD');
+                    exit();
+                }
+
+                if ( date("Y-m-d") < $tanggalperiksa) {
+                    $this->gagal('Tanggal periksa harus minimum hari ini.');
+                    exit();
+                }
+
+                if (((strtotime($tanggalperiksa) - time())/(60*60*24))>90) {
+                    $this->gagal('Pendaftaran tidak boleh lebih dari 90 hari');
+                    exit();
+                }
+
+                if ($jenisreferensi!=1 || $jenisreferensi!=2) {
+                    $this->gagal('Jenis referensi salah.');
+                    exit();
+                }
+
+                if ($jenisrequest!=1 || $jenisrequest!=2) {
+                    $this->gagal('Jenis request salah.');
+                    exit();
+                }
+
                 $poli = $this->antrian->get_poli($kodepoli);
                 $cekpoli = $this->check($poli);
                 if ($cekpoli->status === false) {
@@ -202,14 +232,17 @@ class Antri extends REST_Controller
             } else {
                 /* kalau token valid lanjut disini */
 
+                if (!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$tanggalperiksa)) {
+                    $this->gagal('Format tanggal salah atau kosong. Gunakan format YYYY-MM-DD');
+                    exit();
+                }
+
                 $poli = $this->antrian->get_poli($kodepoli);
                 $cekpoli = $this->check($poli);
                 if ($cekpoli->status === false) {
                     $this->gagal('Poli tidak tersedia.');
                     exit();
                 }
-
-                //todo get poi id
 
                 $belum_dilayani = $this->antrian->get_dilayani($poli[0]->id_poliklinik, $tanggalperiksa);
                 $cek_belum_dilayani = $this->check($belum_dilayani);
@@ -272,6 +305,11 @@ class Antri extends REST_Controller
                 exit();
             } else {
                 /* kalau token valid lanjut disini */
+
+                if(strlen($nomorkartu)!=13){
+                    $this->gagal('Nomor Kartu tidak boleh kurang/lebih dari 13 digit');
+                    exit();
+                }
 
                 $operasi = $this->antrian->get_kodebooking_op($nopeserta);
                 $cekop = $this->check($operasi);
