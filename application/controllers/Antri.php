@@ -137,12 +137,12 @@ class Antri extends REST_Controller
                     exit();
                 }
 
-                if ($jenisreferensi!=1 || $jenisreferensi!=2) {
+                if ($jenisreferensi!=1 && $jenisreferensi!=2) {
                     $this->gagal('Jenis referensi salah.');
                     exit();
                 }
 
-                if ($jenisrequest!=1 || $jenisrequest!=2) {
+                if ($jenisrequest!=1 && $jenisrequest!=2) {
                     $this->gagal('Jenis request salah.');
                     exit();
                 }
