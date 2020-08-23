@@ -127,7 +127,7 @@ class Antri extends REST_Controller
                     exit();
                 }
 
-                if ( date("Y-m-d") < $tanggalperiksa) {
+                if ( date("Y-m-d") > $tanggalperiksa) {
                     $this->gagal('Tanggal periksa harus minimum hari ini.');
                     exit();
                 }
@@ -306,7 +306,7 @@ class Antri extends REST_Controller
             } else {
                 /* kalau token valid lanjut disini */
 
-                if(strlen($nomorkartu)!=13){
+                if(strlen($nopeserta)!=13){
                     $this->gagal('Nomor Kartu tidak boleh kurang/lebih dari 13 digit');
                     exit();
                 }
@@ -370,6 +370,11 @@ class Antri extends REST_Controller
                 exit();
             } else {
                 /* kalau token valid lanjut disini */
+
+                if (((strtotime($tanggalawal) - strtotime($tanggalakhir))/(60*60*24))>0) {
+                    $this->gagal('Tanggal awal lebih besar dari tanggal akhir');
+                    exit();
+                }
 
                 $operasi = $this->antrian->get_list_op($tanggalawal, $tanggalakhir);
                 $cekop = $this->check($operasi);
