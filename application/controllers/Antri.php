@@ -162,10 +162,18 @@ class Antri extends REST_Controller
                 }
 
                 /* cek apakah peserta sudah terdaftar sebelumnya */
-                $noantrian = $this->antrian->cek_terdaftar($nomorkartu, $nik, $poli[0]->id_poliklinik, $tanggalperiksa, $nomorreferensi);
+
+                $noantrian = $this->antrian->cek_terdaftar($nomorkartu, $nik, $poli[0]->id_poliklinik, $nomorreferensi);
                 $ceknoantrian = $this->check($noantrian);
                 if ($ceknoantrian->status === true) {
-                    $this->gagal('Anda sudah terdaftar antrian.');
+                    $this->gagal('Nomor referensi anda sudah terdaftar antrian.');
+                    exit();
+                }
+
+                $noantrian = $this->antrian->cek_terdaftar($nomorkartu, $nik, $poli[0]->id_poliklinik, $tanggalperiksa);
+                $ceknoantrian = $this->check($noantrian);
+                if ($ceknoantrian->status === true) {
+                    $this->gagal('Anda sudah terdaftar antrian pada tanggal yang dipilih.');
                     exit();
                 }
                 
