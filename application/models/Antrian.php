@@ -18,9 +18,10 @@ class Antrian extends CI_Model
         $this->db->where('nik', $nomorkartu);
         $this->db->or_where('nik', $nik);
         $this->db->where('id_poli', $kodepoli);
-        $this->db->where('tgl_periksa', $tgl_periksa);
         if ($noreferensi!="" || $noreferensi){
             $this->db->where('no_referensi', $noreferensi);
+        } else {
+            $this->db->where('tgl_periksa', $tgl_periksa);
         }
         $this->db->from('tbl_antrian');
         $query = $this->db->get();
