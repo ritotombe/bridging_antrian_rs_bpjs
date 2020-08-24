@@ -118,7 +118,7 @@ class Antri extends REST_Controller
                 /* kalau token valid lanjut disini */
 
                 if(strlen($nomorkartu)!=13){
-                    $this->gagal('Nomor Kartu tidak boleh kurang/lebih dari 13 digit');
+                    $this->gagal('Nomor Kartu tidak boleh kurang atau lebih dari 13 digit');
                     exit();
                 }
 
@@ -316,7 +316,7 @@ class Antri extends REST_Controller
                 /* kalau token valid lanjut disini */
 
                 if(strlen($nopeserta)!=13){
-                    $this->gagal('Nomor Kartu tidak boleh kurang/lebih dari 13 digit');
+                    $this->gagal('Nomor Kartu tidak boleh kurang atau lebih dari 13 digit');
                     exit();
                 }
 
