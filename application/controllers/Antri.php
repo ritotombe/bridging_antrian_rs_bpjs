@@ -99,7 +99,7 @@ class Antri extends REST_Controller
         $nik = $this->post('nik');
         $notelp = $this->post('notelp');
         $tanggalperiksa = $this->post('tanggalperiksa');
-        $kodepoli = $this->post('kodepoli');
+        $kodepoli = strtoupper($this->post('kodepoli'));
         $nomorreferensi = $this->post('nomorreferensi');
         $jenisreferensi = $this->post('jenisreferensi');
         $jenisrequest = $this->post('jenisrequest');
@@ -118,7 +118,12 @@ class Antri extends REST_Controller
                 /* kalau token valid lanjut disini */
 
                 if(strlen($nomorkartu)!=13){
-                    $this->gagal('Nomor Kartu tidak boleh kurang/lebih dari 13 digit');
+                    $this->gagal('Nomor Kartu tidak boleh kurang atau lebih dari 13 digit');
+                    exit();
+                }
+
+                if(strlen($nik)!=16){
+                    $this->gagal('NIK tidak boleh kurang atau lebih dari 16 digit');
                     exit();
                 }
 
