@@ -198,7 +198,7 @@ class Antri extends REST_Controller
                 }
                 $nomorantrean = $poli[0]->BPJS_kode_poli."-". $angkaantrian;
 
-                $estimasi = $this->antrian->get_estimasi($poli[0]->id_poliklinik, $tanggalperiksa);
+                $estimasi = $this->antrian->get_estimasi($poli[0]->id_poliklinik, $tanggalperiksa, $jadwal[0]->jam_mulai);
 
                 $kodebooking = $this->antrian->input($nomorantrean, $nomorkartu, $nik, $notelp, $tanggalperiksa, $poli[0]->id_poliklinik, $nomorreferensi, $jenisreferensi, $jenisrequest, $polieksekutif, $jadwal[0]->id_jadwal);
 
