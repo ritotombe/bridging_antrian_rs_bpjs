@@ -389,6 +389,16 @@ class Antri extends REST_Controller
             } else {
                 /* kalau token valid lanjut disini */
 
+                if (!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$tanggalawal)) {
+                    $this->gagal('Gagal, Format tanggal awal salah atau kosong. Gunakan format YYYY-MM-DD');
+                    exit();
+                }
+
+                if (!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$tanggalakhir)) {
+                    $this->gagal('Gagal, Format tanggal akhir salah atau kosong. Gunakan format YYYY-MM-DD');
+                    exit();
+                }
+                
                 if (((strtotime($tanggalawal) - strtotime($tanggalakhir))/(60*60*24))>0) {
                     $this->gagal('Gagal, Tanggal awal lebih besar dari tanggal akhir');
                     exit();
