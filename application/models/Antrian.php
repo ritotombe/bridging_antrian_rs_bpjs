@@ -75,6 +75,17 @@ class Antrian extends CI_Model
     public function get_estimasi($kodepoli, $tanggalperiksa)
     {
         /* perhitungan estimasi disesuaikan sendiri dengan sistem antrian RS */
+
+        // $this->db->select('count(*) as jml');
+        // $this->db->where('id_poli', $kodepoli);
+        // $this->db->where('tgl_periksa', $tanggalperiksa);
+        // $this->db->where('poli_eksekutif', '0');
+        // $this->db->where('status_antrian', 2);
+        // $this->db->group_by('status_antrian');
+        // $this->db->from('tbl_antrian');
+        // $query = $this->db->get();
+        // $total antrian $query->result();
+
         date_default_timezone_set('Asia/Makassar');
         $stamp = strtotime($tanggalperiksa);
         $time_in_ms = $stamp * 1000;
