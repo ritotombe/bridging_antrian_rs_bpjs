@@ -17,7 +17,7 @@ class Antri extends REST_Controller
         $this->load->database();
     }
 
-    private function gagal($pesan = 'Anda tidak memiliki akses / Layanan tidak tersedia.')
+    private function gagal($pesan = 'Anda tidak memiliki akses atau layanan tidak tersedia.')
     {
         $status = parent::HTTP_UNAUTHORIZED;
         $response = array(
