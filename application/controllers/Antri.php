@@ -140,7 +140,7 @@ class Antri extends REST_Controller
                 // if($nomorreferensi && $nomorreferensi!=""){
                 //     $rujukan_puskesmas= "20".$nomorreferensi[10].$nomorreferensi[11]."-".$nomorreferensi[8].$nomorreferensi[9]."-".$nomorreferensi[8].$nomorreferensi[9];
                 if (((strtotime($tanggalperiksa) - time())/(60*60*24))>14) {
-                    $this->gagal('Gagal, Pendaftaran tidak boleh lebih dari 14 hari');
+                    $this->gagal('Gagal, pengambilan rujukan minimum hari ini selama 14 hari kedepan');
                     exit();
                 }
                 // }
