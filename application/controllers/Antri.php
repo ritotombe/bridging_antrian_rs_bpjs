@@ -137,10 +137,14 @@ class Antri extends REST_Controller
                     exit();
                 }
 
-                if (((strtotime($tanggalperiksa) - time())/(60*60*24))>90) {
-                    $this->gagal('Gagal, Pendaftaran tidak boleh lebih dari 90 hari');
+                // if($nomorreferensi && $nomorreferensi!=""){
+                //     $rujukan_puskesmas= "20".$nomorreferensi[10].$nomorreferensi[11]."-".$nomorreferensi[8].$nomorreferensi[9]."-".$nomorreferensi[8].$nomorreferensi[9];
+                if (((strtotime($tanggalperiksa) - time())/(60*60*24))>14) {
+                    $this->gagal('Gagal, Pendaftaran tidak boleh lebih dari 14 hari');
                     exit();
                 }
+                // }
+                
 
                 if ($jenisreferensi!=1 && $jenisreferensi!=2) {
                     $this->gagal('Gagal, Jenis referensi salah.');
