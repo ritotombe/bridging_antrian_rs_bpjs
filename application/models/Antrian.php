@@ -72,7 +72,7 @@ class Antrian extends CI_Model
         return  $insert_id;
     }
 
-    public function get_estimasi($kodepoli, $tanggalperiksa)
+    public function get_estimasi($kodepoli, $tanggalperiksa, $jammulai)
     {
         /* perhitungan estimasi disesuaikan sendiri dengan sistem antrian RS */
 
@@ -85,6 +85,13 @@ class Antrian extends CI_Model
         // $this->db->from('tbl_antrian');
         // $query = $this->db->get();
         // $total antrian $query->result();
+
+        if ($jammulai){
+            date_default_timezone_set('Asia/Makassar');
+            $stamp = strtotime($tanggalperiksa." ".$jammulai);
+            $time_in_ms = $stamp * 1000;
+            return $time_in_ms;
+        }
 
         date_default_timezone_set('Asia/Makassar');
         $stamp = strtotime($tanggalperiksa);
