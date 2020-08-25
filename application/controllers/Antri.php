@@ -161,6 +161,11 @@ class Antri extends REST_Controller
                     exit();
                 }
 
+                if($polieksekutif == 1){
+                    $this->gagal('Gagal, Poli eksekutif belum ada.');
+                    exit();
+                }
+
                 $poli = $this->antrian->get_poli($kodepoli);
                 $cekpoli = $this->check($poli);
                 if ($cekpoli->status === false) {
