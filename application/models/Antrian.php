@@ -72,6 +72,17 @@ class Antrian extends CI_Model
         return  $insert_id;
     }
 
+    public function get_libur($tanggalperiksa){
+        $hari_libur = array(
+            "2020-10-29",
+            "2020-12-25",
+            "2020-10-30",
+            "2020-10-24",
+        );
+
+        return in_array($tanggalperiksa, $hari_libur);
+    }
+
     public function get_estimasi($kodepoli, $tanggalperiksa, $jammulai=NULL)
     {
         /* perhitungan estimasi disesuaikan sendiri dengan sistem antrian RS */

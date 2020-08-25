@@ -117,6 +117,11 @@ class Antri extends REST_Controller
             } else {
                 /* kalau token valid lanjut disini */
 
+                if ($this->antrian->get_libur($tanggalperiksa)) {
+                    $this->gagal('Gagal, tidak dapat membuat pendaftaran di hari libur.');
+                    exit();
+                }
+
                 if(strlen($nomorkartu)!=13){
                     $this->gagal('Gagal, Nomor Kartu tidak boleh kurang atau lebih dari 13 digit');
                     exit();
