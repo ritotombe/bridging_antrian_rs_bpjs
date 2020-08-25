@@ -72,7 +72,7 @@ class Antrian extends CI_Model
         return  $insert_id;
     }
 
-    public function get_estimasi($kodepoli, $tanggalperiksa, $jammulai)
+    public function get_estimasi($kodepoli, $tanggalperiksa, $jammulai=NULL)
     {
         /* perhitungan estimasi disesuaikan sendiri dengan sistem antrian RS */
 
