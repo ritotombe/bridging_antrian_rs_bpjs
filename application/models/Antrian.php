@@ -72,9 +72,38 @@ class Antrian extends CI_Model
         return  $insert_id;
     }
 
-    public function get_estimasi($kodepoli, $tanggalperiksa)
+    public function get_libur($tanggalperiksa){
+        $hari_libur = array(
+            "2020-10-29",
+            "2020-12-25",
+            "2020-10-30",
+            "2020-10-24",
+        );
+
+        return in_array($tanggalperiksa, $hari_libur);
+    }
+
+    public function get_estimasi($kodepoli, $tanggalperiksa, $jammulai=NULL)
     {
         /* perhitungan estimasi disesuaikan sendiri dengan sistem antrian RS */
+
+        // $this->db->select('count(*) as jml');
+        // $this->db->where('id_poli', $kodepoli);
+        // $this->db->where('tgl_periksa', $tanggalperiksa);
+        // $this->db->where('poli_eksekutif', '0');
+        // $this->db->where('status_antrian', 2);
+        // $this->db->group_by('status_antrian');
+        // $this->db->from('tbl_antrian');
+        // $query = $this->db->get();
+        // $total antrian $query->result();
+
+        if ($jammulai){
+            date_default_timezone_set('Asia/Makassar');
+            $stamp = strtotime($tanggalperiksa." ".$jammulai);
+            $time_in_ms = $stamp * 1000;
+            return $time_in_ms;
+        }
+
         date_default_timezone_set('Asia/Makassar');
         $stamp = strtotime($tanggalperiksa);
         $time_in_ms = $stamp * 1000;

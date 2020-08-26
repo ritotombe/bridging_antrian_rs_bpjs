@@ -17,7 +17,7 @@ class Antri extends REST_Controller
         $this->load->database();
     }
 
-    private function gagal($pesan = 'Anda tidak memiliki akses / Layanan tidak tersedia.')
+    private function gagal($pesan = 'Gagal, anda tidak memiliki akses atau layanan tidak tersedia.')
     {
         $status = parent::HTTP_UNAUTHORIZED;
         $response = array(
@@ -99,7 +99,7 @@ class Antri extends REST_Controller
         $nik = $this->post('nik');
         $notelp = $this->post('notelp');
         $tanggalperiksa = $this->post('tanggalperiksa');
-        $kodepoli = $this->post('kodepoli');
+        $kodepoli = strtoupper($this->post('kodepoli'));
         $nomorreferensi = $this->post('nomorreferensi');
         $jenisreferensi = $this->post('jenisreferensi');
         $jenisrequest = $this->post('jenisrequest');
@@ -117,47 +117,66 @@ class Antri extends REST_Controller
             } else {
                 /* kalau token valid lanjut disini */
 
+                if ($this->antrian->get_libur($tanggalperiksa)) {
+                    $this->gagal('Gagal, tidak dapat membuat pendaftaran di hari libur.');
+                    exit();
+                }
+
                 if(strlen($nomorkartu)!=13){
-                    $this->gagal('Nomor Kartu tidak boleh kurang atau lebih dari 13 digit');
+                    $this->gagal('Gagal, Nomor Kartu tidak boleh kurang atau lebih dari 13 digit');
+                    exit();
+                }
+
+                if(strlen($nik)!=16){
+                    $this->gagal('Gagal, NIK tidak boleh kurang atau lebih dari 16 digit');
                     exit();
                 }
 
                 if (!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$tanggalperiksa)) {
-                    $this->gagal('Format tanggal salah atau kosong. Gunakan format YYYY-MM-DD');
+                    $this->gagal('Gagal, Format tanggal salah atau kosong. Gunakan format YYYY-MM-DD');
                     exit();
                 }
 
                 if ( date("Y-m-d") > $tanggalperiksa) {
-                    $this->gagal('Tanggal periksa harus minimum hari ini.');
+                    $this->gagal('Gagal, Tanggal periksa harus minimum hari ini.');
                     exit();
                 }
 
-                if (((strtotime($tanggalperiksa) - time())/(60*60*24))>90) {
-                    $this->gagal('Pendaftaran tidak boleh lebih dari 90 hari');
+                // if($nomorreferensi && $nomorreferensi!=""){
+                //     $rujukan_puskesmas= "20".$nomorreferensi[10].$nomorreferensi[11]."-".$nomorreferensi[8].$nomorreferensi[9]."-".$nomorreferensi[8].$nomorreferensi[9];
+                if (((strtotime($tanggalperiksa) - time())/(60*60*24))>14) {
+                    $this->gagal('Gagal, pengambilan rujukan minimum hari ini selama 14 hari kedepan');
                     exit();
                 }
+                // }
+                
 
                 if ($jenisreferensi!=1 && $jenisreferensi!=2) {
-                    $this->gagal('Jenis referensi salah.');
+                    $this->gagal('Gagal, Jenis referensi salah.');
                     exit();
                 }
 
                 if ($jenisrequest!=1 && $jenisrequest!=2) {
-                    $this->gagal('Jenis request salah.');
+                    $this->gagal('Gagal, Jenis request salah.');
+                    exit();
+                }
+
+                if($polieksekutif == 1){
+                    $this->gagal('Gagal, Poli eksekutif belum ada.');
                     exit();
                 }
 
                 $poli = $this->antrian->get_poli($kodepoli);
                 $cekpoli = $this->check($poli);
                 if ($cekpoli->status === false) {
-                    $this->gagal('Poli tidak tersedia.');
+                    $this->gagal('Gagal, Poli tidak tersedia.');
                     exit();
                 }
 
                 $jadwal = $this->antrian->get_jadwal($poli[0]->id_poliklinik, date("D",strtotime($tanggalperiksa)));
                 $cekjadwal = $this->check($jadwal);
                 if ($cekjadwal->status === false) {
-                    $this->gagal('Jadwal poli tidak tersedia.');
+                    $this->gagal('Gagal, Jadwal poli tidak tersedia.');
                     exit();
                 }
 
@@ -166,7 +185,7 @@ class Antri extends REST_Controller
                     $noantrian = $this->antrian->cek_terdaftar_ref($nomorkartu, $nik, $poli[0]->id_poliklinik, $nomorreferensi);
                     $ceknoantrian = $this->check($noantrian);
                     if ($ceknoantrian->status === true) {
-                        $this->gagal('Nomor referensi anda sudah terdaftar antrian.');
+                        $this->gagal('Gagal, Anda Telah melakukan pendaftaran dengan Nomor Rujukan yang sama.');
                         exit();
                     }
                 }
@@ -174,7 +193,7 @@ class Antri extends REST_Controller
                 $noantrian = $this->antrian->cek_terdaftar($nomorkartu, $nik, $poli[0]->id_poliklinik, $tanggalperiksa);
                 $ceknoantrian = $this->check($noantrian);
                 if ($ceknoantrian->status === true) {
-                    $this->gagal('Anda sudah terdaftar antrian pada tanggal yang dipilih.');
+                    $this->gagal('Gagal, Anda sudah terdaftar antrian pada tanggal yang dipilih.');
                     exit();
                 }
                 
@@ -189,7 +208,7 @@ class Antri extends REST_Controller
                 }
                 $nomorantrean = $poli[0]->BPJS_kode_poli."-". $angkaantrian;
 
-                $estimasi = $this->antrian->get_estimasi($poli[0]->id_poliklinik, $tanggalperiksa);
+                $estimasi = $this->antrian->get_estimasi($poli[0]->id_poliklinik, $tanggalperiksa, $jadwal[0]->jam_mulai);
 
                 $kodebooking = $this->antrian->input($nomorantrean, $nomorkartu, $nik, $notelp, $tanggalperiksa, $poli[0]->id_poliklinik, $nomorreferensi, $jenisreferensi, $jenisrequest, $polieksekutif, $jadwal[0]->id_jadwal);
 
@@ -242,14 +261,14 @@ class Antri extends REST_Controller
                 /* kalau token valid lanjut disini */
 
                 if (!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$tanggalperiksa)) {
-                    $this->gagal('Format tanggal salah atau kosong. Gunakan format YYYY-MM-DD');
+                    $this->gagal('Gagal, Format tanggal salah atau kosong. Gunakan format YYYY-MM-DD');
                     exit();
                 }
 
                 $poli = $this->antrian->get_poli($kodepoli);
                 $cekpoli = $this->check($poli);
                 if ($cekpoli->status === false) {
-                    $this->gagal('Poli tidak tersedia.');
+                    $this->gagal('Gagal, Poli tidak tersedia.');
                     exit();
                 }
 
@@ -316,14 +335,14 @@ class Antri extends REST_Controller
                 /* kalau token valid lanjut disini */
 
                 if(strlen($nopeserta)!=13){
-                    $this->gagal('Nomor Kartu tidak boleh kurang atau lebih dari 13 digit');
+                    $this->gagal('Gagal, Nomor Kartu tidak boleh kurang atau lebih dari 13 digit');
                     exit();
                 }
 
                 $operasi = $this->antrian->get_kodebooking_op($nopeserta);
                 $cekop = $this->check($operasi);
                 if ($cekop->status === false) {
-                    $this->gagal('Anda belum memiliki jadwal operasi.');
+                    $this->gagal('Gagal, Anda belum memiliki jadwal operasi.');
                     exit();
                 }
 
@@ -380,15 +399,25 @@ class Antri extends REST_Controller
             } else {
                 /* kalau token valid lanjut disini */
 
+                if (!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$tanggalawal)) {
+                    $this->gagal('Gagal, Format tanggal awal salah atau kosong. Gunakan format YYYY-MM-DD');
+                    exit();
+                }
+
+                if (!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$tanggalakhir)) {
+                    $this->gagal('Gagal, Format tanggal akhir salah atau kosong. Gunakan format YYYY-MM-DD');
+                    exit();
+                }
+                
                 if (((strtotime($tanggalawal) - strtotime($tanggalakhir))/(60*60*24))>0) {
-                    $this->gagal('Tanggal awal lebih besar dari tanggal akhir');
+                    $this->gagal('Gagal, Tanggal awal lebih besar dari tanggal akhir');
                     exit();
                 }
 
                 $operasi = $this->antrian->get_list_op($tanggalawal, $tanggalakhir);
                 $cekop = $this->check($operasi);
                 if ($cekop->status === false) {
-                    $this->gagal('Belum ada jadwal operasi pada tanggal tersebut.');
+                    $this->gagal('Gagal, Belum ada jadwal operasi pada tanggal tersebut.');
                     exit();
                 }
 
